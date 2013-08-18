@@ -3,10 +3,8 @@ dictzip.js
 
 JavaScript API for handling dictzip compressed files.
 
-Since there is no canonical way of handling files in JavaScript (though
-the W3C's File API looks like a promising step in that direction), this
-implementation regards a "file" as a pair, consisting of a binary string
-and a name (filename).
+This implementation uses W3C's File API as well as some gzip API 
+hat has yet to be found ;-)
 
 
 Further reading
@@ -14,6 +12,8 @@ Further reading
 
 Format documentation (dictzip manpage): http://linux.die.net/man/1/dictzip  
 gzip format documentation (referenced in dictzip documentation): http://www.gzip.org/zlib/rfc-gzip.html
+
+JavaScript API for gzip: http://jsxgraph.uni-bayreuth.de/wp/2009/09/29/jsxcompressor-zlib-compressed-javascript-code/
 
 Original implementation (written in C): http://dict.cvs.sourceforge.net/viewvc/dict/dictd1/dictzip.c?view=markup  
 Python API: http://code.google.com/p/pytoolkits/source/browse/trunk/utils/stardict/dictzip.py  
