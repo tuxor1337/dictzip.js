@@ -1,7 +1,7 @@
 dictzip.js
 ==========
 
-JavaScript API for handling dictzip compressed files effectively, i.e. it does not
+JavaScript library for handling dictzip compressed files effectively, i.e. it does not
 uncompress and load into memory the whole data blob, but instead provides an interface
 for (asynchronous) random access to the compressed data.
 
@@ -21,7 +21,7 @@ readable output.
 Example code
 ---
 
-Using js-inflate API from https://github.com/augustl/js-inflate we get:
+Using js-inflate from https://github.com/augustl/js-inflate we get:
 
     /* The DictZipFile constructor expects an inflate function.
      * This function in turn is supposed to expect a binary string
@@ -57,10 +57,8 @@ Further reading
 Format documentation (dictzip manpage): http://linux.die.net/man/1/dictzip  
 gzip format documentation (referenced in dictzip documentation): http://www.gzip.org/zlib/rfc-gzip.html
 
-JavaScript API for gzip: http://jsxgraph.uni-bayreuth.de/wp/2009/09/29/jsxcompressor-zlib-compressed-javascript-code/
-
 Original implementation (written in C): http://dict.cvs.sourceforge.net/viewvc/dict/dictd1/dictzip.c?view=markup  
-Python API: http://code.google.com/p/pytoolkits/source/browse/trunk/utils/stardict/dictzip.py  
-Java API: http://code.google.com/p/toolkits/source/browse/trunk/android/YAStarDict/src/com/googlecode/toolkits/stardict/DictZipFile.java
+Python lib: http://code.google.com/p/pytoolkits/source/browse/trunk/utils/stardict/dictzip.py  
+Java lib: http://code.google.com/p/toolkits/source/browse/trunk/android/YAStarDict/src/com/googlecode/toolkits/stardict/DictZipFile.java
 
-JavaScript API for StarDict: https://github.com/tuxor1337/stardict.js
+JavaScript library for StarDict: https://github.com/tuxor1337/stardict.js
