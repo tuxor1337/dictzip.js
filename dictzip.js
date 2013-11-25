@@ -42,7 +42,6 @@
                         dzfile.slice(that.length, that.length + 2)
                     );
                 } else {
-                    console.log("FHCRC not set, continuing...");
                     that.onread(header_data);
                 }
             }
@@ -72,7 +71,6 @@
                         gzfile.slice(offset, offset + n * 1024)
                     );
                 } else {
-                    console.log("FCOMMENT not set, continuing...");
                     read_fhcrc();
                 }
             }
@@ -102,7 +100,6 @@
                         gzfile.slice(offset, offset + n * 1024)
                     );
                 } else {
-                    console.log("FNAME not set, continuing...");
                     read_fcomment();
                 }
             }
@@ -151,7 +148,6 @@
                         gzfile.slice(that.length, that.length + 2)
                     );
                 } else {
-                    console.log("FEXTRA not set, continuing...");
                     read_fname();
                 }
             }
@@ -213,7 +209,6 @@
             
             this.onsuccess = function () { };
             this.onerror = function () { };
-            this.onread = function () { };
             
             this.load = function(f) {
                 dzfile = f;
@@ -227,8 +222,7 @@
                         for(var i = 0; i < subfields.length; i++) {
                             sf = subfields[i];
                             if(sf["SI1"] == 'R' || sf["SI2"] == 'A') {
-                                found = true;
-                                break;
+                                found = true; break;
                             }
                         }
                         if(!found) {
@@ -245,8 +239,6 @@
                                 chunks.push([chpos,thischlen]);
                                 chpos += thischlen;
                             }
-                            console.log("chlen="+chlen);
-                            console.log("chcnt="+chcnt);
                         }
                         theDzFile.verified = true;
                         theDzFile.onsuccess();
@@ -255,29 +247,25 @@
                 reader.read(f);
             };
             
-            this.read = function (pos, len) {
+            this.read = function (pos, len, callbk) {
                 if(!this.verified) {
                     this.onerror("Read attempt before loadend.");
                 }
-                console.log("firstpos="+firstpos);
                 var firstchunk = Math.floor(pos/chlen);
                 var offset = pos - firstchunk*chlen;
                 var lastchunk = Math.floor((pos+len)/chlen);
                 var finish = offset + len;
                 reader = new FileReader();
-                reader.onload = (function (theDzFile) {
-                    return function (e) {
-                        blob = e.target.result;
-                        buf = "";
-                        for(var i = firstchunk, j = chunks[firstchunk][0];
-                           i <=  lastchunk && j < blob.length;
-                           j += chunks[i][1], i++) {
-                            inflated = gunzip(blob.slice(j,j+chunks[i][1]));
-                            buf += inflated;
-                        }
-                        theDzFile.onread(buf.slice(offset,finish));
-                    };
-                })(this);
+                reader.onload = function (e) {
+                    var blob = e.target.result, buf = "";
+                    for(var i = firstchunk, j = 0;
+                       i <=  lastchunk && j < blob.length;
+                       j += chunks[i][1], i++) {
+                        inflated = gunzip(blob.slice(j,j+chunks[i][1]));
+                        buf += inflated;
+                    }
+                    callbk(buf.slice(offset,finish));
+                };
                 reader.readAsBinaryString(dzfile.slice(
                     firstpos + chunks[firstchunk][0],
                     firstpos + chunks[lastchunk][0] + chunks[lastchunk][1]
