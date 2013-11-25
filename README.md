@@ -27,27 +27,28 @@ Using js-inflate from https://github.com/augustl/js-inflate we get:
      * This function in turn is supposed to expect a binary string
      * and return a binary string in the above sense.
      */
-    var dfile = new DictZipFile(JSInflate.inflate);
     
     $("input[type=file]").change(function (evt) {
-        dfile.onsuccess = function () {
+        var dzreader = new DictZipFile(JSInflate.inflate);
+        dzreader.onsuccess = function () {
                 /* After the dictzip blob has been "loaded",
                  * that means, it's header has been read, we can execute
                  * some fancy read operations and retrieve data.
                  */
-                this.onread = function (data) {
+                 
+                /* expects start byte and length of requested data set
+                   as well as a callback function that handles the data */
+                this.read(0,353, function (data) {
                     // data now conains a binary string
                     console.log(data); // maybe not a good idea, since data might contain non-readable chars
-                };
-                /* expects start byte and length of requested data set */
-                this.read(0,353);
+                };);
         };
         
-        dfile.onerror = function (err) {
+        dzreader.onerror = function (err) {
             console.error("DictZipFile error: " + err);
         };
         
-        dfile.load(evt.target.files[0]);
+        dzreader.load(evt.target.files[0]);
     });
 
 
