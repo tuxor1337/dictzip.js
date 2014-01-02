@@ -1,6 +1,9 @@
 dictzip.js
 ==========
 
+This project is put on ice till late February 2014! Please contact me if you have plans to work on it in the meantime. Major restructuring plans are already on paper and I might have to think these plans over if somebody comes up with great new ideas.
+---
+
 JavaScript library for handling dictzip compressed files effectively, i.e. it does not
 uncompress and load into memory the whole data blob, but instead provides an interface
 for (asynchronous) random access to the compressed data.
