@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <title>dictzip.js demo</title>
+ </head>
+ <body>
+    <p><input type="file" /></p>
+    <script type="text/javascript">
+        var worker = new Worker("worker.js");
+        worker.onmessage = function (oEvent) {
+            console.log(oEvent.data);
+        };
+        
+        var upload = document.getElementsByTagName('input')[0];
+        upload.onchange = function (evt) {
+            evt.preventDefault();
+            worker.postMessage(evt.target.files[0]);
+        };
+    </script>
+ </body>
+</html>

@@ -117,6 +117,7 @@
         return header_data;
     }
     
+    
     var DictZipFile = (function () {
         var cls = function (f, gunzip_func) {
             var dzfile = f,
@@ -158,50 +159,35 @@
                 }
             }
             
-            this.load = function() {
-                return new Promise(function (resolve, reject) {
-                    var reader = new FileReader();
-                    reader.onload = function (evt) {
-                        try {
-                            get_chunks(evt.target.result);
-                            resolve();
-                        } catch(err) {
-                            reject(err.message);
-                        }
-                    };
-                    reader.readAsArrayBuffer(dzfile);
-                });
-            };
+            // this.load()
+            var reader = new FileReaderSync();
+            get_chunks(reader.readAsArrayBuffer(dzfile));
             
             this.read = function (pos, len) {
-                return new Promise(function (resolve, reject) {
-                    if(!verified) {
-                        reject("Read attempt before loadend.");
-                    }
-                    var firstchunk = Math.min(Math.floor(pos/chlen), chunks.length-1),
-                        lastchunk = Math.min(Math.floor((pos+len)/chlen), chunks.length-1),
-                        offset = pos - firstchunk*chlen,
-                        finish = offset + len,
-                        reader = new FileReader();
-                    reader.onload = function (e) {
-                        var out_buffer = new ArrayBuffer(0),
-                            in_buffer = e.target.result;
-                        
-                        for(var i = firstchunk, j = 0;
-                           i <=  lastchunk && j < in_buffer.byteLength;
-                           j += chunks[i][1], i++) {
-                            var chunk = in_buffer.slice(j,j+chunks[i][1]),
-                                inflated = gunzip(chunk, 0, chunk.byteLength);
-                            out_buffer = mergeArrayBuffers(out_buffer, inflated);
-                        }
-                        
-                        resolve(out_buffer.slice(offset, finish));
-                    };
-                    reader.readAsArrayBuffer(dzfile.slice(
+                if(!verified) {
+                    throw new Error("Read attempt before loadend.");
+                }
+                var firstchunk = Math.min(Math.floor(pos/chlen), chunks.length-1),
+                    lastchunk = Math.min(Math.floor((pos+len)/chlen), chunks.length-1),
+                    offset = pos - firstchunk*chlen,
+                    finish = offset + len;
+                    
+                var reader = new FileReaderSync(),
+                    out_buffer = new ArrayBuffer(0),
+                    in_buffer = reader.readAsArrayBuffer(dzfile.slice(
                         gzip_header["LENGTH"] + chunks[firstchunk][0],
                         gzip_header["LENGTH"] + chunks[lastchunk][0] + chunks[lastchunk][1]
-                    ));
-                });
+                ));
+                
+                for(var i = firstchunk, j = 0;
+                   i <=  lastchunk && j < in_buffer.byteLength;
+                   j += chunks[i][1], i++) {
+                    var chunk = in_buffer.slice(j,j+chunks[i][1]),
+                        inflated = gunzip(chunk, 0, chunk.byteLength);
+                    out_buffer = mergeArrayBuffers(out_buffer, inflated);
+                }
+                
+                return out_buffer.slice(offset, finish);
             };
         };
     

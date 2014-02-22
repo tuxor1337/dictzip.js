@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <title>dictzip.js demo</title>
+    
+    <script src="../dictzip.js" type="text/javascript"></script>
+    <script src="inflate.js" type="text/javascript"></script>
+ </head>
+ <body>
+    <p><input type="file" /></p>
+    <script type="text/javascript">
+        function intArrayToString(arr) {
+            ret = ""
+            for(var i = 0; i < arr.length; i++) {
+                ret += String.fromCharCode(arr[i]);
+            }
+            return ret;
+        }
+        var upload = document.getElementsByTagName('input')[0];
+         
+        upload.onchange = function (evt) {
+            evt.preventDefault();
+            var dzreader = new DictZipFile(
+                evt.target.files[0],
+                jszlib_inflate_buffer
+            );
+            
+            dzreader.load().then(function () {
+                return dzreader.read(0,100);
+            }, function (err) {
+                console.error("DictZipFile load error: " + err.message);
+            }).then(function (buffer) {
+                var view = new Uint8Array(buffer);
+                console.log(intArrayToString(view));
+            }, function (err) {
+                console.error("DictZipFile read error: " + err.message);
+            });
+        };
+    </script>
+ </body>
+</html>
