@@ -24,6 +24,10 @@ at the moment, because dictzip.js expects a synchronous inflate implementation.
 Example code
 ---
 
+Note that the code in the "code" subdirectory depends on the file "inflate.js"
+from the JSZLib project (see above). If you want to run the demo code copy
+a version of that file into the demo directory.
+
 Using JSZLib we get for the synchronous API:
     
     var upload = document.getElementsByTagName('input')[0];
