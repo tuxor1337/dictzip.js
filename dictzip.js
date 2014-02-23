@@ -1,4 +1,3 @@
-
 (function (GLOBAL) {
     function intArrayToString(arr) {
         ret = ""
@@ -166,7 +165,7 @@
                             get_chunks(evt.target.result);
                             resolve();
                         } catch(err) {
-                            reject(err.message);
+                            reject(err);
                         }
                     };
                     reader.readAsArrayBuffer(dzfile);
@@ -176,7 +175,7 @@
             this.read = function (pos, len) {
                 return new Promise(function (resolve, reject) {
                     if(!verified) {
-                        reject("Read attempt before loadend.");
+                        reject(new Error("Read attempt before loadend."));
                     }
                     var firstchunk = Math.min(Math.floor(pos/chlen), chunks.length-1),
                         lastchunk = Math.min(Math.floor((pos+len)/chlen), chunks.length-1),
