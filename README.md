@@ -21,55 +21,49 @@ and returns an ArrayBuffer.
 zip.js from https://github.com/gildas-lormeau/zip.js is not compatible
 at the moment, because dictzip.js expects a synchronous inflate implementation.
 
-Example code
----
+### Example code
 
 Note that the code in the "demo" subdirectory depends on the file "inflate.js"
 from the JSZLib project (see above). If you want to run the demo code copy
 a version of that file into the demo directory.
 
-Using JSZLib we get for the synchronous API:
+### Documentation: Synchronous interface
+
+Include `dictzip_sync.js` into your worker's scope, e.g. using `importScripts`. This adds `DictZipFile` as a global variable.
+
+    var dzreader = new DictZipFile(blob, inflate);
     
-    var upload = document.getElementsByTagName('input')[0];
-    upload.onchange = function (evt) {
-        try {
-            /* The DictZipFile constructor expects a File Object and an
-             * inflate function. This function is supposed to expect an
-             * ArrayBuffer and return an ArrayBuffer.
-             */
-            var dzreader = new DictZipFile(
-                evt.target.files[0],
-                jszlib_inflate_buffer
-            );
-            
-            /* expects start byte and length of requested data set */
-            var buffer = dzreader.read(0,353);
-            
-            // do something with buffer
-        } catch(err) {
-            console.error("DictZipFile error: " + err.message);
-        }
-    };
+The `DictZipFile` constructor expects a Blob object `blob` and a function `inflate`. This function is supposed to expect an ArrayBuffer and return an ArrayBuffer (e.g. `jszlib_inflate_buffer` from the JSZLib project).
 
-The asynchronous API uses promises and hence looks like this:
+    var buffer = dzreader.read(offset, size);
+    
+Instances of `DictZipFile` have only this method. `offset` and `size` are unsigned integers that represent the offset and size with respect to the inflated data. Both are optional and default to 0 (for `offset`) and the inflated data's bytelength (for `size`).
 
-    var upload = document.getElementsByTagName('input')[0];
-    upload.onchange = function (evt) {
-        var dzreader = new DictZipFile(
-            evt.target.files[0],
-            jszlib_inflate_buffer
-        );
-        
-        dzreader.load().then(function () {
-            return dzreader.read(0,353);
-        }, function (err) {
-            console.error("DictZipFile load error: " + err.message);
-        }).then(function (buffer) {
-            // do something with buffer
-        }, function (err) {
-            console.error("DictZipFile read error: " + err.message);
-        });
-    };
+In case of errors, `DictZipFile` throws an instance of `Error` with the respective `message` property. 
+
+### Documentation: Asynchronous interface
+
+The asynchronous interface is provided by `dictzip.js` and adds `DictZipFile` as a global variable.
+
+    var dzreader = new DictZipFile(blob, inflate);
+    
+For `blob` and `inflate` cf. the synchronous case (note that `inflate` is supposed to be a _synchronous_ implementation of the inflate algorithm). Before we can do anything with our instance of `DictZipFile` we have to wait for it to `load`:
+
+    dzreader.load().then(function () {
+        // now you can use the `read` method etc.
+    }, function (err) {
+        console.error("DictZipFile load error: " + err.message);
+    });
+
+The `load` method returns a `Promise` object. `DictZipFile` reads the file's header and verifies that it's indeed a dictzip file. Once the promise is fulfilled we can do some `read` operations:
+
+    dzreader.read(offset, size).then(function (buffer) {
+        // do something with buffer
+    }, function (err) {
+        console.error("DictZipFile read error: " + err.message);
+    });
+    
+Again `read` returns a `Promise` object that provides you with an ArrayBuffer `buffer` when fulfilled. For the parameters `offset` and `size` refer to the synchronous case.
 
 Further reading
 ---
