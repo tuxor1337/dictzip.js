@@ -29,7 +29,7 @@ var console = {
     }
 };
 
-importScripts("inflate.js");
+importScripts("pako_inflate.js");
 importScripts("../dictzip_sync.js");
 
 
@@ -46,7 +46,7 @@ onmessage = function (oEvent) {
     try {
         var dzreader = new DictZipFile(
                 files,
-                jszlib_inflate_buffer
+                pako.inflateRaw
             ),
             view = new Uint8Array(dzreader.read(0,100));
         console.log(intArrayToString(view));

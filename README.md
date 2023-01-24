@@ -15,16 +15,16 @@ e.g. UTF-8 encoded text you may still have to convert the resulting
 ArrayBuffer to a UTF-8 string for human readable output.
 
 dictzip.js depends on an inflate implementation written in JavaScript like
-JSZLib from https://github.com/dasmoth/jszlib which expects an ArrayBuffer
-and returns an ArrayBuffer.
+pako from https://github.com/nodeca/pako/tree/0.2.8 (version 0.2.x) which expects
+an ArrayBuffer and returns an ArrayBuffer.
 
-zip.js from https://github.com/gildas-lormeau/zip.js is not compatible
+However, zip.js from https://github.com/gildas-lormeau/zip.js is not compatible
 at the moment, because dictzip.js expects a synchronous inflate implementation.
 
 ### Example code
 
-Note that the code in the "demo" subdirectory depends on the file "inflate.js"
-from the JSZLib project (see above). If you want to run the demo code copy
+Note that the code in the "demo" subdirectory depends on the file "pako_inflate.js"
+from the pako project (see above). If you want to run the demo code, copy
 a version of that file into the demo directory.
 
 ### Documentation: Synchronous interface
@@ -33,7 +33,7 @@ Include `dictzip_sync.js` into your worker's scope, e.g. using `importScripts`. 
 
     var dzreader = new DictZipFile(blob, inflate);
     
-The `DictZipFile` constructor expects a Blob object `blob` and a function `inflate`. This function is supposed to expect an ArrayBuffer and return an ArrayBuffer (e.g. `jszlib_inflate_buffer` from the JSZLib project).
+The `DictZipFile` constructor expects a Blob object `blob` and a function `inflate`. This function is supposed to expect an ArrayBuffer and return an ArrayBuffer (e.g. `pako.inflateRaw` from the pako project).
 
     var buffer = dzreader.read(offset, size);
     
@@ -68,11 +68,9 @@ Again `read` returns a `Promise` object that provides you with an ArrayBuffer `b
 Further reading
 ---
 
-Format documentation (dictzip manpage): http://linux.die.net/man/1/dictzip  
-gzip format documentation (referenced in dictzip documentation): http://www.gzip.org/zlib/rfc-gzip.html
-
-Original implementation (written in C): http://dict.cvs.sourceforge.net/viewvc/dict/dictd1/dictzip.c?view=markup  
-Python lib: http://code.google.com/p/pytoolkits/source/browse/trunk/utils/stardict/dictzip.py  
-Java lib: http://code.google.com/p/toolkits/source/browse/trunk/android/YAStarDict/src/com/googlecode/toolkits/stardict/DictZipFile.java
-
-JavaScript library for StarDict: https://github.com/tuxor1337/stardict.js
+* Format documentation (dictzip manpage): http://linux.die.net/man/1/dictzip
+* gzip format documentation (referenced in dictzip documentation): http://www.gzip.org/zlib/rfc-gzip.html
+* Original implementation (written in C): http://dict.cvs.sourceforge.net/viewvc/dict/dictd1/dictzip.c?view=markup
+* Python lib: http://code.google.com/p/pytoolkits/source/browse/trunk/utils/stardict/dictzip.py
+* Java lib: http://code.google.com/p/toolkits/source/browse/trunk/android/YAStarDict/src/com/googlecode/toolkits/stardict/DictZipFile.java
+* JavaScript library for StarDict: https://framagit.org/tuxor1337/stardict.js
